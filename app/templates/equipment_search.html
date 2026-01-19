@@ -1,17 +1,17 @@
 {#equipment_search#}
-<h2>設備查詢</h2>
+<h2>設�??�詢</h2>
 
 {#
 <form method="get" action="{{ url_for('main.equipment_search') }}" style="margin-bottom: 15px;">
-  <label for="q">輸入 SN（Kaori / Supermicro 都可以）：</label>
+<label for="q">��J SN�]Vendor / OEM�^</label>
   <input type="text" id="q" name="q" value="{{ q or '' }}"
          style="padding:4px; border-radius:4px; border:1px solid #ccc; width:280px;">
-  <button type="submit" class="btn btn-primary btn-sm">查詢</button>
+  <button type="submit" class="btn btn-primary btn-sm">?�詢</button>
 </form>
 #}
 
 {% if q %}
-  <p>查詢關鍵字：<strong>{{ q }}</strong></p>
+  <p>?�詢?�鍵字�?<strong>{{ q }}</strong></p>
 {% endif %}
 
 {% if results %}
@@ -19,7 +19,7 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Kaori SN</th>
+        <th>Vendor SN</th>
         <th>Supermicro SN</th>
         <th>Firmware</th>
         <th>Room</th>
@@ -30,7 +30,7 @@
       {% for eq in results %}
       <tr>
         <td>{{ loop.index }}</td>
-        <td>{{ eq.kaori_sn }}</td>
+        <td>{{ eq.Vendor_sn }}</td>
         <td>{{ eq.supermicro_sn }}</td>
         <td>{{ eq.firmware }}</td>
         <td>{{ eq.room.room_name if eq.room else '-' }}</td>
@@ -40,7 +40,7 @@
     </tbody>
   </table>
 {% elif q %}
-  <p>查無資料。</p>
+  <p>?�無資�???/p>
 {% else %}
-  <p>請先輸入關鍵字再查詢。</p>
+  <p>請�?輸入?�鍵字�??�詢??/p>
 {% endif %}

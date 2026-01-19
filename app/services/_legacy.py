@@ -33,8 +33,8 @@ def get_case_room_report_context(case_scene_id: int, room_id: int, category: str
 
 def get_case_context(case_scene_id: int) -> Dict[str, Any]:
     """
-    Case 層的 context：Case + rooms + case_key
-    讓 routes 不要自己 query CaseScene/Room
+    Case 層�? context：Case + rooms + case_key
+    �?routes 不�??�己 query CaseScene/Room
     """
     cs = CaseScene.query.get_or_404(case_scene_id)
     rooms = (
@@ -53,7 +53,7 @@ def get_case_context(case_scene_id: int) -> Dict[str, Any]:
 
 def build_room_equipments_ctx(case_scene_id: int, room_id: int, query: EquipmentQuery) -> Dict[str, Any]:
     """
-    Room equipments 清單需要的所有資料（含 uploaded_items / selected_files）
+    Room equipments 清單?�要�??�?��??��???uploaded_items / selected_files�?
     """
     cs = CaseScene.query.get_or_404(case_scene_id)
     room = Room.query.filter_by(id=room_id, case_scene_id=case_scene_id).first_or_404()
@@ -63,7 +63,7 @@ def build_room_equipments_ctx(case_scene_id: int, room_id: int, query: Equipment
     if query.has_text():
         like = query.like()
         eq_q = eq_q.filter(or_(
-            EquipmentInfo.kaori_sn.ilike(like),
+            EquipmentInfo.vendor_sn.ilike(like),
             EquipmentInfo.supermicro_sn.ilike(like),
         ))
 
@@ -87,9 +87,9 @@ def build_room_equipments_ctx(case_scene_id: int, room_id: int, query: Equipment
 
 def build_tree_items(use_json_fallback: bool = True):
     """
-    組 sidebar tree 的資料。
-    主來源：DB 的 CaseScene + Room
-    選配：用 uploaded_items.json 補 DB 沒有的 room（你現在有這段需求才開）
+    �?sidebar tree ?��??��?
+    主�?源�?DB ??CaseScene + Room
+    ?��?：用 uploaded_items.json �?DB 沒�???room（�??�在?�這段?�求�??��?
     """
     uploaded_items = {}
     if use_json_fallback:
@@ -98,7 +98,7 @@ def build_tree_items(use_json_fallback: bool = True):
         except Exception:
             uploaded_items = {}
 
-    # 1) DB 主來源：CaseScene + Room
+    # 1) DB 主�?源�?CaseScene + Room
     cs_rows = CaseScene.query.order_by(CaseScene.id.asc()).all()
     room_rows = Room.query.order_by(Room.id.asc()).all()
 
@@ -115,7 +115,7 @@ def build_tree_items(use_json_fallback: bool = True):
         for r in rooms_by_cs.get(cs.id, []):
             room_list.append({"id": r.id, "name": r.room_name, "equipments": []})
 
-        # 2) JSON fallback（可關閉）
+        # 2) JSON fallback（可?��?�?
         if use_json_fallback:
             json_rooms = (uploaded_items.get(cs_key, {}) or {}).keys()
             existing_names = {x["name"] for x in room_list}
@@ -142,12 +142,12 @@ def roles_required(*roles):
 
 def init_upload_folders() -> None:
     """
-    初始化上傳資料夾（避免第一次上傳時才 mkdir 造成路徑問題）
-    依你系統的分類建立：Inspection / Logs / Other / Feedback
+    ?��??��??��??�夾（避?�第一次�??��???mkdir ?��?路�??��?�?
+    依�?系統?��?類建立�?Inspection / Logs / Other / Feedback
     """
     upload_root = current_app.config.get("UPLOAD_FOLDER")
     if not upload_root:
-        # 讓錯誤早一點爆，方便排查設定問題
+        # 讓錯誤早一點�?，方便�??�設定�?�?
         raise RuntimeError("UPLOAD_FOLDER is not configured in app.config")
 
     folders = ["Inspection", "Logs", "Other", "Feedback"]
@@ -175,7 +175,7 @@ def save_uploaded_items(data: dict) -> None:
 
 
 def append_uploaded_item(country: str, room: Optional[str], filename: str) -> dict:
-    """JSON store：更新 uploaded_items 並寫檔，回傳更新後 dict"""
+    """JSON store：更??uploaded_items 並寫檔�??�傳?�新�?dict"""
     items = load_uploaded_items()
     items.setdefault(country, {})
     if room:
@@ -188,10 +188,10 @@ def append_uploaded_item(country: str, room: Optional[str], filename: str) -> di
 
 def validate_ext(filename: str) -> str:
     if "." not in filename:
-        raise ValueError("檔名沒有副檔名")
+        raise ValueError("檔�?沒�??��???)
     ext = filename.rsplit(".", 1)[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
-        raise ValueError("只能上傳 CSV / XLSX / TXT / LOG")
+        raise ValueError("?�能上傳 CSV / XLSX / TXT / LOG")
     return ext
 
 
@@ -210,19 +210,19 @@ def save_feedback_text(country: str, room: str, feedback_text: str) -> str:
 
 def parse_equipment_file(file_path: str, max_lines: int = 200) -> dict:
     """
-    萬用解析:
-    1) 支援 'A,B' 逗號格式
-    2) 支援 'A: B' 冒號格式
-    3) 支援 'A B' 空白分隔格式
-    4) Key 大小寫無關、空白無關
-    5) 只讀前 max_lines 行，避免超大檔案卡死
+    ?�用�??:
+    1) ?�援 'A,B' ?��??��?
+    2) ?�援 'A: B' ?��??��?
+    3) ?�援 'A B' 空白?��??��?
+    4) Key 大�?寫無?�、空?�無??
+    5) ?��???max_lines 行�??��?超大檔�??�死
     """
 
     FIELD_MAP = {
         "inspection details": "inspection_details",
         "last inspect": "last_inspect",
         "serial number": "serial_number",
-        "kaori sn": "kaori_sn",
+        "Vendor SN": "vendor_sn",
         "model": "model",
         "part number": "part_number",
         "eth1": "eth1",
@@ -236,7 +236,7 @@ def parse_equipment_file(file_path: str, max_lines: int = 200) -> dict:
     info = {v: "" for v in FIELD_MAP.values()}
 
     if not os.path.exists(file_path):
-        # 這裡不 raise，讓上層決定要不要 FileNotFoundError
+        # ?�裡�?raise，�?上層決�?要�?�?FileNotFoundError
         return info
 
     line_count = 0
@@ -253,14 +253,14 @@ def parse_equipment_file(file_path: str, max_lines: int = 200) -> dict:
             key = None
             val = None
 
-            # 1) 逗號
+            # 1) ?��?
             if "," in line:
                 parts = line.split(",", 1)
                 key = parts[0].strip().lower()
                 val = parts[1].strip()
 
             else:
-                # 2) 冒號
+                # 2) ?��?
                 if ":" in line:
                     parts = line.split(":", 1)
                     key = parts[0].strip().lower()
@@ -284,15 +284,15 @@ def parse_equipment_file(file_path: str, max_lines: int = 200) -> dict:
                     info[field_name] = val
                     break
 
-    # 你原本習慣組合 firmware
+    # 你�??��??????firmware
     info["firmware"] = f"{info.get('system_software','')},{info.get('control_firmware','')}".strip(",")
 
-    print(f"🔍 parse_equipment_file info = {info}", file=sys.stderr)
+    print(f"?? parse_equipment_file info = {info}", file=sys.stderr)
     return info
 
 
 def build_inspection_report_context(filename: str) -> Dict[str, Any]:
-    """只回傳 context（不做 redirect / 不拼 HTML）"""
+    """?��???context（�???redirect / 不拼 HTML�?""
     base_dir = current_app.config["UPLOAD_FOLDER"]
     inspection_dir = os.path.join(base_dir, "Inspection")
     logs_dir = os.path.join(base_dir, "Logs")
@@ -312,17 +312,17 @@ def build_inspection_report_context(filename: str) -> Dict[str, Any]:
     info = parse_equipment_file(file_path)
 
     serial_number = info.get("serial_number") or ""
-    kaori_sn = info.get("kaori_sn") or ""
+    vendor_sn = info.get("vendor_sn") or ""
 
     eq = None
     if serial_number:
         eq = EquipmentInfo.query.filter_by(supermicro_sn=serial_number).first()
-    if not eq and kaori_sn:
-        eq = EquipmentInfo.query.filter_by(kaori_sn=kaori_sn).first()
+    if not eq and vendor_sn:
+        eq = EquipmentInfo.query.filter_by(vendor_sn=vendor_sn).first()
 
     fields = [
         ("Serial Number", "serial_number"),
-        ("Kaori SN", "kaori_sn"),
+        ("Vendor SN", "vendor_sn"),
         ("Model", "model"),
         ("Part Number", "part_number"),
         ("Last Inspect", "last_inspect"),
@@ -335,10 +335,10 @@ def build_inspection_report_context(filename: str) -> Dict[str, Any]:
 
     return {
         "filename": filename,
-        "category": category,   # route 看到 Logs 就 redirect
+        "category": category,   # route ?�到 Logs �?redirect
         "info": info,
         "fields": fields,
-        "eq": eq,               # template 用 eq.id 產 feedback_url
+        "eq": eq,               # template ??eq.id ??feedback_url
     }
 
 def touch_location(country: str, room: Optional[str]) -> dict:
@@ -356,10 +356,10 @@ def upload_and_register_auto(
     customer_changes: str = "",
     equipment_type_id: int | None = None,
     file_category: str | None = None,
-    equipment_id: int | None = None,   # ✅ logs 用來綁設備
+    equipment_id: int | None = None,   # ??logs ?��?綁設??
 ):
     if not file_storage or not file_storage.filename:
-        raise ValueError("沒有檔案")
+        raise ValueError("沒�?檔�?")
 
     stored_path = None
     manage_record=None
@@ -367,15 +367,15 @@ def upload_and_register_auto(
     #cs_key = f'{c}({loc})'
 
     try:
-        # ✅ 確保 location/room 存在
+        # ??確�? location/room 存在
         cs, r = ensure_case_room(c,loc , room_raw)
         if not r:
-            raise ValueError("room 必填（EquipmentManage.room_id nullable=False）")
+            raise ValueError("room 必填（EquipmentManage.room_id nullable=False�?)
 
         filename = secure_filename(file_storage.filename)
         validate_ext(filename)
 
-        # ✅ 統一分類：用你寫的 classify_upload
+        # ??統�??��?：用你寫??classify_upload
         category = classify_upload(filename, file_category)
 
         upload_root = current_app.config["UPLOAD_FOLDER"]
@@ -389,35 +389,35 @@ def upload_and_register_auto(
             filename = f"{base}_{ts}{ext}"
             stored_path = os.path.join(category_dir, filename)
 
-        # 存檔
+        # 存�?
         file_storage.seek(0)
         with open(stored_path, "wb") as f:
             f.write(file_storage.read())
 
         equipment = None
 
-        # ✅ inspection：解析並 upsert
+        # ??inspection：解?�並 upsert
         if category == "inspection":
             info = parse_equipment_file(stored_path)
 
             supermicro_sn = (info.get("serial_number") or "").strip()
-            kaori_sn = (info.get("kaori_sn") or "").strip()
+            vendor_sn = (info.get("vendor_sn") or "").strip()
             firmware = (info.get("firmware") or "").strip()
 
             if not supermicro_sn:
-                raise ValueError("檔案缺少 Serial Number (supermicro_sn)")
-            if not kaori_sn:
-                raise ValueError("檔案缺少 Kaori SN (kaori_sn)")
+                raise ValueError("檔�?缺�? Serial Number (supermicro_sn)")
+            if not vendor_sn:
+                raise ValueError("檔�?缺�? Vendor SN (vendor_sn)")
             if not firmware:
-                raise ValueError("檔案缺少 firmware (system_software/control_firmware)")
+                raise ValueError("檔�?缺�? firmware (system_software/control_firmware)")
 
             equipment = EquipmentInfo.query.filter_by(supermicro_sn=supermicro_sn).first() \
-                        or EquipmentInfo.query.filter_by(kaori_sn=kaori_sn).first()
+                        or EquipmentInfo.query.filter_by(vendor_sn=vendor_sn).first()
 
             if not equipment:
                 equipment = EquipmentInfo(
                     supermicro_sn=supermicro_sn,
-                    kaori_sn=kaori_sn,
+                    vendor_sn=vendor_sn,
                     firmware=firmware,
                     room_id=r.id,
                     equipment_type_id=equipment_type_id,
@@ -431,21 +431,21 @@ def upload_and_register_auto(
                     equipment.equipment_type_id = equipment_type_id
                 db.session.flush()
 
-        # ✅ logs：禁止新建設備，必須綁既有 inspection 的 equipment
+        # ??logs：�?止新建設?��?必�?綁既??inspection ??equipment
         elif category == "logs":
             if not equipment_id:
-                raise ValueError("Logs 必須指定 equipment_id（請先上傳 inspection 並選定設備）")
+                raise ValueError("Logs 必�??��? equipment_id（�??��???inspection 並選定設?��?")
 
             equipment = EquipmentInfo.query.get(equipment_id)
             if not equipment:
-                raise ValueError("找不到對應設備，請先上傳 inspection")
+                raise ValueError("?��??��??�設?��?請�?上傳 inspection")
 
-        # ✅ other：你可以先當作不寫 DB（或規定必須 equipment_id）
+        # ??other：�??�以?�當作�?�?DB（�?規�?必�? equipment_id�?
         else:
-            # 先不動，避免你需求擴散
+            # ?��??��??��?你�?求擴??
             pass
 
-        # ✅ logs / inspection 都可寫一筆 manage record（可選）
+        # ??logs / inspection ?�可寫�?�?manage record（可?��?
         if equipment:
             manage_record = EquipmentManage(
                 equipment_info_id=equipment.id,
@@ -482,7 +482,7 @@ def save_feedback_with_photos(equipment, text: str, before_file, after_file, use
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    saved_paths = []  # ✅ 記錄這次寫出去的檔案，失敗就刪掉
+    saved_paths = []  # ??記�??�次寫出?��?檔�?，失?�就?��?
 
     def _save_one(file_obj, tag: str):
         if not file_obj or not getattr(file_obj, "filename", ""):
@@ -496,7 +496,7 @@ def save_feedback_with_photos(equipment, text: str, before_file, after_file, use
         with open(path, "wb") as f:
             f.write(file_obj.read())
 
-        saved_paths.append(path)  # ✅ 加入 cleanup 名單
+        saved_paths.append(path)  # ???�入 cleanup ?�單
         return stored
 
     try:
@@ -521,7 +521,7 @@ def save_feedback_with_photos(equipment, text: str, before_file, after_file, use
     except Exception:
         db.session.rollback()
 
-        # ✅ cleanup：把剛寫出去的照片刪掉，避免孤兒檔
+        # ??cleanup：�??�寫?�去?�照?�刪?��??��?孤�?�?
         for p in saved_paths:
             try:
                 if os.path.exists(p):
@@ -534,13 +534,13 @@ def save_feedback_with_photos(equipment, text: str, before_file, after_file, use
 
 def parse_case_scene(raw: str):
     """
-    支援：
+    ?�援�?
       1) USA(Quincy) -> ("USA", "Quincy")
-      2) USA / Quincy -> ("USA", "Quincy")  (可選)
+      2) USA / Quincy -> ("USA", "Quincy")  (?�選)
     """
     raw = (raw or "").strip()
     if not raw:
-        raise ValueError("country/case_scene 不可為空")
+        raise ValueError("country/case_scene 不可?�空")
 
     m = re.match(r"^(?P<country>[^()]+)\((?P<location>[^()]+)\)$", raw)
     if m:
@@ -549,26 +549,26 @@ def parse_case_scene(raw: str):
         return country,location
 
     raw = re.sub(r'\s+',' ',raw).strip()
-    # 沒括號：就先全部當 country，location 用同值頂著（至少不炸）
+    # 沒括?��?就�??�部??country，location ?��??��??��??��?不炸�?
     return raw, raw
 
 def ensure_case_room(
         country_or_country: str, 
         location_or_room: str | None = None, 
         room_raw: str | None = None):
-     # --- 判斷是哪種呼叫 ---
+     # --- ?�斷?�哪種呼??---
     if room_raw is None:
-        # 兩參數：country_or_country = "USA(quincy)", location_or_room = room
+        # ?��??��?country_or_country = "USA(quincy)", location_or_room = room
         country_raw = country_or_country
         room_name = location_or_room
         country, location = parse_case_scene(country_raw)
     else:
-        # 三參數：country_or_country = "USA", location_or_room = "quincy", room_raw = room
+        # 三�??��?country_or_country = "USA", location_or_room = "quincy", room_raw = room
         country = country_or_country
         location = location_or_room or ""
         room_name = room_raw
 
-    # --- 清洗 ---
+    # --- 清�? ---
     country  = re.sub(r"\s+", " ", (country or "")).strip()
     location = re.sub(r"\s+", " ", (location or "")).strip()
     room_name = re.sub(r"\s+", " ", (room_name or "")).strip() or None
@@ -593,8 +593,8 @@ def ensure_case_room(
 
 def ensure_case_room_committed(cs_name: str, room_name: str):
     """
-    確保 CaseScene/Room 存在，並完成 commit。
-    回傳 (cs, r)
+    確�? CaseScene/Room 存在，並完�? commit??
+    ?�傳 (cs, r)
     """
     print(">>> ensure_case_room_committed CALLED", cs_name, room_name)
     cs, r = ensure_case_room(cs_name, room_name)
@@ -603,13 +603,13 @@ def ensure_case_room_committed(cs_name: str, room_name: str):
 
 def resolve_case_context(cs_name: str) -> Dict[str, Any]:
     """
-    回傳「案場操作上下文（Case-level）」：
-    - Case 存不存在
-    - 有哪些 rooms
-    - 是否允許進入 upload 畫面
-    - 是否在 submit 時必須指定 room
-    ❌ 不 commit
-    ❌ 不 redirect
+    ?�傳?��??��?作�?下�?（Case-level）」�?
+    - Case 存�?存在
+    - ?�哪�?rooms
+    - ?�否?�許?�入 upload ?�面
+    - ?�否??submit ?��??��?�?room
+    ??�?commit
+    ??�?redirect
     """
 
     country, location = parse_case_scene(cs_name)
@@ -619,7 +619,7 @@ def resolve_case_context(cs_name: str) -> Dict[str, Any]:
         location=location
     ).first()
 
-    # Case 不存在 → 仍然允許進 upload（由 submit 時建立）
+    # Case 不�?????仍然?�許??upload（由 submit ?�建立�?
     if not cs:
         return {
             "case": None,
@@ -627,7 +627,7 @@ def resolve_case_context(cs_name: str) -> Dict[str, Any]:
             "rooms": [],
             "has_rooms": False,
 
-            # 行為語意
+            # 行為語�?
             "can_enter_upload": True,
             "require_room_on_submit": True,
         }
@@ -646,13 +646,13 @@ def resolve_case_context(cs_name: str) -> Dict[str, Any]:
         "rooms": rooms,
         "has_rooms": len(rooms) > 0,
 
-        # 行為語意
-        "can_enter_upload": True,          # ✅ Case 層永遠可進 upload
-        "require_room_on_submit": True,    # ✅ 真正送出一定要 room
+        # 行為語�?
+        "can_enter_upload": True,          # ??Case 層永?�可??upload
+        "require_room_on_submit": True,    # ???�正?�出一定�? room
     }
 
 def classify_upload(filename: str, file_category: str | None = None) -> str:
-    # file_category 來自前端 label（你已有 file_category）
+    # file_category 來自?�端 label（�?已�? file_category�?
     if file_category:
         fc = file_category.strip().lower()
         if fc in {"inspection", "logs", "feedback", "other"}:
@@ -668,8 +668,8 @@ def classify_upload(filename: str, file_category: str | None = None) -> str:
 
 def create_location(raw_country: str, raw_room: str | None):
     """
-    建立/更新案場與 room，並同步 JSON tree
-    回傳給 API 用的 dict
+    建�?/?�新案場??room，並?�步 JSON tree
+    ?�傳�?API ?��? dict
     """
     c, loc = parse_case_scene(raw_country)
     country_key = f"{c}({loc})"
@@ -681,7 +681,7 @@ def create_location(raw_country: str, raw_room: str | None):
         db.session.rollback()
         raise
 
-    # DB 成功後做副作用（tree）
+    # DB ?��?後�??��??��?tree�?
     items = touch_location(country_key, raw_room)
     current_app.uploaded_items = items
 
@@ -695,8 +695,8 @@ def create_location(raw_country: str, raw_room: str | None):
 
 def create_upload(req):
     """
-    上傳/回饋寫入的主流程
-    回傳 dict: {filename: "..."}
+    上傳/?��?寫入?�主流�?
+    ?�傳 dict: {filename: "..."}
     """
     file_category = (req.form.get("file_category") or "inspection").lower()
     file = req.files.get("file")
@@ -709,25 +709,25 @@ def create_upload(req):
         raise ValueError("country 必填")
 
     if not room and file_category in ("inspection", "logs", "feedback", "other"):
-        raise ValueError("請先選擇/輸入 Room（不可為空）")
+        raise ValueError("請�??��?/輸入 Room（�??�為空�?")
 
     c, loc = parse_case_scene(country)
     country_key = f"{c}({loc})"
 
     if file_category == "logs" and not req.form.get("equipment_id"):
-        raise ValueError("Logs 必須選擇設備")
+        raise ValueError("Logs 必�??��?設�?")
 
     try:
         if file_category == "feedback":
             if not feedback_text:
-                raise ValueError("Feedback 內容不可為空")
+                raise ValueError("Feedback ?�容不可?�空")
 
             stored_filename = save_feedback_text(country_key, room, feedback_text)
             db.session.commit()
 
         else:
             if not file or file.filename == "":
-                raise ValueError("沒有選擇檔案")
+                raise ValueError("沒�??��?檔�?")
 
             validate_ext(file.filename)
 
@@ -747,7 +747,7 @@ def create_upload(req):
         db.session.rollback()
         raise
 
-    # DB/檔案成功後更新 tree
+    # DB/檔�??��?後更??tree
     items = append_uploaded_item(country_key, room, stored_filename)
     current_app.uploaded_items = items
 

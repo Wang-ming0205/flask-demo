@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or "Kaori System" }}</title>
+  <title>{{ title or "Vendor System" }}</title>
 
   <!-- Bootstrap & SweetAlert -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -178,7 +178,7 @@
 <body>
 <header class="top-header d-flex align-items-center justify-content-between gap-3">
   <div class="header-left">
-    <img src="{{ url_for('static', filename='image/kaori.jpg') }}" alt="company_png">
+    <img src="{{ url_for('static', filename='image/Vendor.jpg') }}" alt="company_png">
   </div>
 
   
@@ -204,7 +204,7 @@
     </div>
     <div class="user-line-2 mt-1 d-flex justify-content-end align-items-center gap-2 flex-wrap">
       {% if current_user.role in ['superuser', 'operator'] %}
-        <a href="{{ url_for('main.manage_users') }}" class="user-link">人員管理</a>
+        <a href="{{ url_for('main.manage_users') }}" class="user-link">人員管�?</a>
       {% endif %}
 
       <a href="{{ url_for('main.change_password') }}" class="user-link">修改密碼</a>
@@ -238,7 +238,7 @@
               style="display:inline-block; color:inherit; text-decoration:none; font-weight:800;">
               All
             </a>
-            <span class="caret" style="margin-left:6px;">▾</span>
+            <span class="caret" style="margin-left:6px;">??/span>
 
             <ul class="nested">
               {% for cs in tree_items %}
@@ -249,7 +249,7 @@
                       style="display:inline-block; color:inherit; text-decoration:none; font-weight:700;">
                       {{ cs.name }}
                     </a>
-                    <span class="caret" style="margin-left:6px; cursor:pointer;">▾</span>
+                    <span class="caret" style="margin-left:6px; cursor:pointer;">??/span>
 
                     <ul class="nested">
                       {% for room in cs.rooms %}

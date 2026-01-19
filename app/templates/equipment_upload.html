@@ -11,9 +11,9 @@
 
 <div class="p-3 bg-white border rounded mb-3 d-flex align-items-center justify-content-between">
   <div>
-    <strong>目前位置：</strong>
-    {{ selected_country or prefill_country or "（未選案場）" }} /
-    {{ selected_room or prefill_room or "（未選Room）" }}
+    <strong>?��?位置�?/strong>
+    {{ selected_country or prefill_country or "（未?��??��?" }} /
+    {{ selected_room or prefill_room or "（未?�Room�? }}
   </div>
 
   {% if selected_country_id and selected_room_id %}
@@ -23,7 +23,7 @@
                         room_id=selected_room_id,
                         tab='list',
                         category=category or 'inspection') }}">
-      回檔案列表
+      ?��?案�?�?
     </a>
   {% endif %}
 </div>
@@ -35,22 +35,22 @@
         enctype="multipart/form-data">
 
     <div class="mb-2">
-      <label class="form-label">國家/地點</label>
+      <label class="form-label">?�家/?��?</label>
       <input class="form-control" id="country-input" name="country"
             value="{{ prefill_country or selected_country or '' }}"
-            placeholder="例：USA(TX) / Japan(Tokyo)">
+            placeholder="例�?USA(TX) / Japan(Tokyo)">
     </div>
 
     <div class="mb-2">
       <label class="form-label">Room</label>
       <input class="form-control" id="room-input" name="room"
             value="{{ prefill_room or selected_room or '' }}"
-            placeholder="例：DH001 / RoomA">
+            placeholder="例�?DH001 / RoomA">
       <input type="hidden" name="room_id" value="{{ selected_room_id or '' }}">
     </div>
 
     <div class="mb-2">
-      <label class="form-label">檔案類型</label>
+      <label class="form-label">檔�?類�?</label>
       <select class="form-select" name="file_category" id="file-category" required>
         <option value="inspection" {% if category=='inspection' %}selected{% endif %}>Inspection</option>
         <option value="logs" {% if category=='logs' %}selected{% endif %}>Logs</option>
@@ -59,19 +59,19 @@
     </div>
 
     <div class="mb-2" id="equipment-id-wrapper" style="display:none;">
-      <label class="form-label">選擇設備（Logs 必填）</label>
+      <label class="form-label">?��?設�?（Logs 必填�?/label>
       <select class="form-select" name="equipment_id" id="equipment-id">
-        <option value="">請選擇設備</option>
+        <option value="">請選?�設??/option>
         {% for eq in equipments or [] %}
-          <option value="{{ eq.id }}">{{ eq.supermicro_sn }} / {{ eq.kaori_sn }}</option>
+          <option value="{{ eq.id }}">{{ eq.supermicro_sn }} / {{ eq.vendor_sn }}</option>
         {% endfor %}
       </select>
     </div>
 
     <div class="mb-2" id="equipment-type-wrapper">
-      <label class="form-label">設備類型</label>
+      <label class="form-label">設�?類�?</label>
       <select class="form-select" name="equipment_type_id" id="equipment-type">
-        <option value="">請選擇設備類型</option>
+        <option value="">請選?�設?��???/option>
         {% for t in equipment_types or [] %}
           <option value="{{ t.id }}">{{ t.name }}</option>
         {% endfor %}
@@ -79,18 +79,18 @@
     </div>
 
     <div class="mb-2" id="feedback-wrapper" style="display:none;">
-      <label class="form-label">Feedback 說明</label>
+      <label class="form-label">Feedback 說�?</label>
       <textarea class="form-control" name="feedback_text" rows="4"
-                placeholder="請描述需設變設備及原因..."></textarea>
+                placeholder="請�?述�?設�?設�??��???.."></textarea>
     </div>
 
     <div class="mb-2">
-      <label class="form-label">檔案</label>
+      <label class="form-label">檔�?</label>
       <input id="file-input" class="form-control" type="file" name="file">
     </div>
 
     <div class="d-flex gap-2">
-      <button type="button" id="add-location-btn" class="btn btn-success">新增</button>
+      <button type="button" id="add-location-btn" class="btn btn-success">?��?</button>
       <button type="submit" class="btn btn-primary">上傳</button>
     </div>
   </form>
@@ -103,7 +103,7 @@
       <div id="swal-percent" class="swal-percent">0%</div>
     </div>
   </div>
-  <div id="upload-complete-message">上傳完成！</div>
+  <div id="upload-complete-message">上傳完�?�?/div>
 </div>
 
 <script>

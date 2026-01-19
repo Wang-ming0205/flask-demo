@@ -9,20 +9,20 @@ def test_upload_and_query():
     app = create_app()
     app.app_context().push()
 
-    # æ­£ç¢ºæª”æ¡ˆè·¯å¾‘
+    # æ­?¢ºæª”æ?è·¯å?
     file_path = "app/uploads/LU015K15330000170A_Inspection_Result_20251024_131806.csv"
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"{file_path} ä¸å­˜åœ¨")
+        raise FileNotFoundError(f"{file_path} ä¸å???)
 
-    # åŒ…è£ FileStorage
+    # ?…è? FileStorage
     with open(file_path, "rb") as f:
         file_storage = FileStorage(stream=f, filename=os.path.basename(file_path))
         upload_and_register_auto(file_storage)
 
-    # æŸ¥è©¢ EquipmentInfo
+    # ?¥è©¢ EquipmentInfo
     equipments = EquipmentInfo.query.all()
     for e in equipments:
-        print(e.id, e.kaori_sn, e.supermicro_sn, e.firmware, e.room_id, e.equipment_type_id)
+        print(e.id, e.vendor_sn, e.supermicro_sn, e.firmware, e.room_id, e.equipment_type_id)
 
 if __name__ == "__main__":
     test_upload_and_query()

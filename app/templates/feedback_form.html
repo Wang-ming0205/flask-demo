@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>新增 Feedback - {{ equipment.kaori_sn or equipment.supermicro_sn }}</h2>
+
+  <form method="POST"
+        action="{{ url_for('main.add_equipment_feedback', eq_id=equipment.id) }}"
+        enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">描述 / 備註</label>
+      <textarea name="feedback" class="form-control" rows="3"
+                placeholder="例如：更換前狀態 / 異常情況說明 / 採取的處置..."></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">設備「變更前」照片</label>
+      <input type="file" name="before_photo" class="form-control"
+             accept=".jpg,.jpeg,.png">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">設備「變更後」照片</label>
+      <input type="file" name="after_photo" class="form-control"
+             accept=".jpg,.jpeg,.png">
+    </div>
+
+    <button type="submit" class="btn btn-primary">送出 Feedback</button>
+  </form>
+{% endblock %}

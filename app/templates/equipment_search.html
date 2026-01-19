@@ -1,0 +1,46 @@
+{#equipment_search#}
+<h2>設備查詢</h2>
+
+{#
+<form method="get" action="{{ url_for('main.equipment_search') }}" style="margin-bottom: 15px;">
+  <label for="q">輸入 SN（Kaori / Supermicro 都可以）：</label>
+  <input type="text" id="q" name="q" value="{{ q or '' }}"
+         style="padding:4px; border-radius:4px; border:1px solid #ccc; width:280px;">
+  <button type="submit" class="btn btn-primary btn-sm">查詢</button>
+</form>
+#}
+
+{% if q %}
+  <p>查詢關鍵字：<strong>{{ q }}</strong></p>
+{% endif %}
+
+{% if results %}
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Kaori SN</th>
+        <th>Supermicro SN</th>
+        <th>Firmware</th>
+        <th>Room</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for eq in results %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ eq.kaori_sn }}</td>
+        <td>{{ eq.supermicro_sn }}</td>
+        <td>{{ eq.firmware }}</td>
+        <td>{{ eq.room.room_name if eq.room else '-' }}</td>
+        <td>{{ eq.equipment_type.name if eq.equipment_type else '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% elif q %}
+  <p>查無資料。</p>
+{% else %}
+  <p>請先輸入關鍵字再查詢。</p>
+{% endif %}

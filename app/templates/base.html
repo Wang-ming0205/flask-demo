@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "Kaori System" }}</title>
+
+  <!-- Bootstrap & SweetAlert -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
+
+  <style>
+    :root{
+      --app-bg:#f6f7fb;
+      --card:#ffffff;
+      --border:rgba(0,0,0,.08);
+      --text:#1f2937;
+      --muted:#6b7280;
+      --brand:#0d6efd;
+      --radius:14px;
+      --shadow: 0 10px 30px rgba(15,23,42,.08);
+    }
+
+    html, body { height: 100%; }
+    body{
+      background: var(--app-bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      margin: 0;
+    }
+
+    /* Top header */
+    .top-header{
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 18px;
+    }
+
+    .header-left img{
+      height: 64px;
+      width: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .header-center h1{
+      font-size: 20px;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    nav a{
+      text-decoration: none;
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    nav a:hover{
+      color: var(--text);
+      background: rgba(13,110,253,.08);
+    }
+    nav a.active{
+      color: var(--brand);
+      background: rgba(13,110,253,.12);
+    }
+
+    .user-box{
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+    .user-line-1{
+      color: var(--text);
+      font-weight: 700;
+    }
+    .user-line-2 .user-link{
+      color: var(--muted);
+      font-weight: 600;
+      margin-left: 8px;
+      text-decoration: none;
+    }
+    .user-line-2 .user-link:hover{
+      color: var(--brand);
+      text-decoration: underline;
+    }
+
+    /* Layout */
+    .app-wrap{
+      max-width: 1280px;
+      margin: 18px auto;
+      padding: 0 14px 24px;
+    }
+    .layout{
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 992px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    .cardx{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .sidebar{
+      padding: 14px;
+      max-height: calc(100vh - 130px);
+      overflow: auto;
+    }
+    .content{
+      padding: 18px;
+      min-height: 420px;
+    }
+
+    /* Flash */
+    .flash{
+      max-width: 1280px;
+      margin: 12px auto 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(15,23,42,.05);
+      font-weight: 600;
+    }
+    .flash.success{ background: #ecfdf3; color:#166534; border-color: rgba(22,101,52,.18); }
+    .flash.danger { background: #fef2f2; color:#991b1b; border-color: rgba(153,27,27,.18); }
+    .flash.info   { background: #eff6ff; color:#1d4ed8; border-color: rgba(29,78,216,.18); }
+
+    /* Tree */
+    .tree ul{ list-style:none; padding-left: 16px; margin: 0; }
+    .tree li{
+      position: relative;
+      margin: 6px 0;
+      user-select: none;
+      border-radius: 10px;
+      padding: 4px 6px;
+    }
+    .tree li:hover{ background: rgba(15,23,42,.04); }
+    .tree li::before{
+      content:"";
+      position:absolute;
+      top: 14px;
+      left: -10px;
+      border-left: 1px solid rgba(0,0,0,.12);
+      border-bottom: 1px solid rgba(0,0,0,.12);
+      width: 10px; height: 10px;
+    }
+    .tree li:last-child::before{ border-left: 1px solid transparent; }
+
+    .tree .caret{
+      font-weight: 800;
+      margin-right: 6px;
+      color: var(--brand);
+      cursor: pointer;
+    }
+    .tree li.active > .nested{ display:block; }
+    .nested{ display:none; padding-left: 12px; }
+
+    #tree-content{ animation: fadeIn .15s ease; }
+    @keyframes fadeIn{
+      from{ opacity:0; transform: translateY(4px); }
+      to  { opacity:1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+<header class="top-header d-flex align-items-center justify-content-between gap-3">
+  <div class="header-left">
+    <img src="{{ url_for('static', filename='image/kaori.jpg') }}" alt="company_png">
+  </div>
+
+  
+  <div class="header-center text-center flex-grow-1">
+      <h1>{{ title }}</h1>
+      <nav class="mt-2 d-flex gap-1 justify-content-center flex-wrap">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('main.equipment_list') }}">Equipment</a>
+          {#<a href="{{ url_for('main.equipment_upload') }}">Upload</a>#}
+          {#<a href="{{ url_for('main.equipment_search') }}">Search</a>#}
+          <a href="{{ url_for('main.logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ url_for('main.login') }}">Login</a>
+        {% endif %}
+      </nav>
+  </div>
+
+  {% if current_user.is_authenticated %}
+  <div class="header-right user-box text-end">
+    <div class="user-line-1">
+      user：{{ current_user.username }} <span style="color:var(--muted); font-weight:700;">| role：{{ current_user.role }}</span>
+    </div>
+    <div class="user-line-2 mt-1 d-flex justify-content-end align-items-center gap-2 flex-wrap">
+      {% if current_user.role in ['superuser', 'operator'] %}
+        <a href="{{ url_for('main.manage_users') }}" class="user-link">人員管理</a>
+      {% endif %}
+
+      <a href="{{ url_for('main.change_password') }}" class="user-link">修改密碼</a>
+
+      {% if current_user.role == 'superuser' %}
+        <button id="btn-reset" type="button" class="btn btn-outline-danger btn-sm">
+          Reset
+        </button>
+      {% endif %}
+    </div>
+
+  </div>
+  {% endif %}
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for cat, msg in messages %}
+      <div class="flash {{cat}}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="app-wrap">
+  <div class="layout">
+    <aside class="cardx sidebar">
+      <div class="tree">
+        <ul>
+          <li class="all-node active">
+            <a href="{{ url_for('main.equipment_list') }}"
+              style="display:inline-block; color:inherit; text-decoration:none; font-weight:800;">
+              All
+            </a>
+            <span class="caret" style="margin-left:6px;">▾</span>
+
+            <ul class="nested">
+              {% for cs in tree_items %}
+                <li class="cs-node">
+
+                  {% if cs.id and cs.id > 0 %}
+                    <a href="{{ url_for('main.case_scene_root', case_scene_id=cs.id) }}"
+                      style="display:inline-block; color:inherit; text-decoration:none; font-weight:700;">
+                      {{ cs.name }}
+                    </a>
+                    <span class="caret" style="margin-left:6px; cursor:pointer;">▾</span>
+
+                    <ul class="nested">
+                      {% for room in cs.rooms %}
+                        <li class="room-node">
+                          {% if room.id and room.id > 0 %}
+                            <a href="{{ url_for('main.case_room_equipments', case_scene_id=cs.id, room_id=room.id,tab='list') }}">
+                              {{ room.name }}
+                            </a>
+                          {% else %}
+                            <span class="text-muted">{{ room.name }}</span>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
+                    </ul>
+
+                  {% else %}
+                    <span class="text-muted" style="font-weight:700;">{{ cs.name }}</span>
+                  {% endif %}
+
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </aside>
+    <main class="cardx content">
+      <div id="tree-content">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
+
+<script>
+  window.APP_CTX = {
+    resetUrl: "{{ url_for('main.reset_system') }}",
+    afterResetUrl: "{{ url_for('main.equipment_list') }}",
+    hasResetBtn: {{ (current_user.is_authenticated) and (current_user.role == 'superuser') | tojson }},
+  };
+</script>
+
+<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Welcome</h2>
+  <p>This sample website has three built-in users.：<br><strong>superuser / operator / user</strong>（The default passwords are this : <em>superpass / operatorpass / userpass</em>）。</p>
+  <ul>
+    <li><a href="{{ url_for('main.super_area') }}">superuser area :  superuser</a></li> 
+    <li><a href="{{ url_for('main.operator_area') }}">operator area : operator or superuser</a></li> 
+  </ul>
+{% endblock %}

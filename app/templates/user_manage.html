@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>人員管理</h2>
+  <p>目前登入：{{ current_user.username }}（角色：{{ current_user.role }}）</p>
+
+  <hr>
+
+  <!-- 使用者列表 -->
+  <h4>使用者列表</h4>
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>帳號</th>
+        <th>角色</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.role }}</td>
+          <td>
+            <!-- superuser / operator 都可以進「編輯頁」 -->
+            <a href="{{ url_for('main.edit_user', user_id=u.id) }}" class="btn btn-sm btn-primary">
+              編輯
+            </a>
+
+            <!-- 只有 superuser 可以刪除，而且不能刪自己 -->
+            {% if current_role == 'superuser' and u.id != current_user.id %}
+              <form method="post"
+                    action="{{ url_for('main.delete_user', user_id=u.id) }}"
+                    style="display:inline-block;"
+                    onsubmit="return confirm('確定要刪除 {{ u.username }} ?');">
+                <button type="submit" class="btn btn-sm btn-danger">刪除</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+  <div>
+    <h2 class="mb-1">人員管理</h2>
+    <p class="mb-0">目前登入：{{ current_user.username }}（角色：{{ current_user.role }}）</p>
+
+
+  <!-- 新增使用者 -->
+  <h4>新增使用者</h4>
+  <form method="post" action="{{ url_for('main.manage_users') }}" class="mt-2" style="max-width:420px;">
+    <div class="mb-3">
+      <label class="form-label">帳號：</label>
+      <input type="text" name="username" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">密碼：</label>
+      <input type="password" name="password" class="form-control" required>
+    </div>
+
+    <!-- superuser 才能選角色；operator 新增的人一律是 user -->
+    {% if current_role == 'superuser' %}
+      <div class="mb-3">
+        <label class="form-label">角色：</label>
+        <select name="role" class="form-select">
+          <option value="user">user</option>
+          <option value="operator">operator</option>
+          <option value="superuser">superuser</option>
+        </select>
+      </div>
+    {% else %}
+      <!-- operator：隱藏欄位，後端也會強制成 user -->
+      <input type="hidden" name="role" value="user">
+      <p class="text-muted">（operator 新增的帳號預設為 user）</p>
+    {% endif %}
+
+    <button type="submit" class="btn btn-success">新增使用者</button>
+  </form>
+
+  <hr>
+
+  <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+    回 Dashboard
+  </a>
+
+{% endblock %}

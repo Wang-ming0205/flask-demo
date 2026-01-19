@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Log 摘要：{{ filename }}</h2>
+
+  {% if result.error %}
+    <p style="color:red;">{{ result.error }}</p>
+  {% endif %}
+
+  <p>總筆數：{{ result.total_rows }}</p>
+
+  {% if result.time_column %}
+    <p>
+      時間欄位：<strong>{{ result.time_column }}</strong>，
+      目前以每 <strong>{{ result.window_minutes }}</strong> 分鐘做平均。
+    </p>
+  {% endif %}
+
+  {% if result.summary_rows and result.numeric_columns %}
+    <h4>每 {{ result.window_minutes }} 分鐘平均（最多 {{ result.summary_rows|length }} 筆）</h4>
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr>
+          <th>Time bucket</th>
+          {% for col in result.numeric_columns %}
+            <th>{{ col }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in result.summary_rows %}
+          <tr>
+            <td>{{ row.time_bucket }}</td>
+            {% for col in result.numeric_columns %}
+              <td>{{ row[col] }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% elif result.raw_samples %}
+    <h4>前幾筆原始資料（無法產生 3 分鐘平均，只顯示原始資料）</h4>
+    <pre style="max-height: 300px; overflow:auto;">
+{{ result.raw_samples | tojson(indent=2) }}
+    </pre>
+  {% else %}
+    <p>目前無法產生摘要，但檔案已可下載。</p>
+  {% endif %}
+
+  <hr>
+  <p>
+    <a href="{{ url_for('main.download_log_file', filename=filename) }}"
+       class="btn btn-secondary">
+      下載原始 Log 檔
+    </a>
+  </p>
+{% endblock %}

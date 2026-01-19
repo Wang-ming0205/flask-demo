@@ -1,0 +1,17 @@
+{#euqipment.html#}
+{% extends "base.html" %}
+{% block content %}
+
+{% if active_tab == "list" %}
+  {% include "equipment_list.html" %}
+{% elif active_tab == "upload" %}
+  {% include "equipment_upload.html" %}
+{% elif active_tab == "case" %}
+  {% include "equipment_case.html" %}
+{% elif active_tab == "report" %}
+  {% include "equipment_report.html" %}
+{% else %}
+  {% include "equipment_list.html" %}
+{% endif %}
+
+{% endblock %}

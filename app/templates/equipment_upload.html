@@ -1,0 +1,115 @@
+{# templates/equipment_upload.html #}
+
+
+<style>
+.progress-wrapper { width: 100%; display:flex; justify-content:center; margin: 20px 0; }
+.swal-progress-container { border:1px solid #ccc; border-radius:5px; height:25px; width:300px; background:#f3f3f3; overflow:hidden; }
+.swal-progress-bar { background: linear-gradient(90deg,#3085d6,#6cb8ff); height:100%; width:0%; transition: width .3s ease; }
+.swal-percent { text-align:center; margin-top:5px; font-weight:700; }
+#upload-complete-message { text-align:center; color:green; font-weight:700; margin-top:10px; display:none; }
+</style>
+
+<div class="p-3 bg-white border rounded mb-3 d-flex align-items-center justify-content-between">
+  <div>
+    <strong>目前位置：</strong>
+    {{ selected_country or prefill_country or "（未選案場）" }} /
+    {{ selected_room or prefill_room or "（未選Room）" }}
+  </div>
+
+  {% if selected_country_id and selected_room_id %}
+    <a class="btn btn-sm btn-outline-secondary"
+      href="{{ url_for('main.equipment_case_room_equipments',
+                        case_scene_id=selected_country_id,
+                        room_id=selected_room_id,
+                        tab='list',
+                        category=category or 'inspection') }}">
+      回檔案列表
+    </a>
+  {% endif %}
+</div>
+
+<div class="p-3 bg-white border rounded">
+  <form id="upload-form"
+        method="post"
+        action="{{ url_for('api.api_equipment_upload') }}"
+        enctype="multipart/form-data">
+
+    <div class="mb-2">
+      <label class="form-label">國家/地點</label>
+      <input class="form-control" id="country-input" name="country"
+            value="{{ prefill_country or selected_country or '' }}"
+            placeholder="例：USA(TX) / Japan(Tokyo)">
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Room</label>
+      <input class="form-control" id="room-input" name="room"
+            value="{{ prefill_room or selected_room or '' }}"
+            placeholder="例：DH001 / RoomA">
+      <input type="hidden" name="room_id" value="{{ selected_room_id or '' }}">
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">檔案類型</label>
+      <select class="form-select" name="file_category" id="file-category" required>
+        <option value="inspection" {% if category=='inspection' %}selected{% endif %}>Inspection</option>
+        <option value="logs" {% if category=='logs' %}selected{% endif %}>Logs</option>
+        <option value="feedback" {% if category=='feedback' %}selected{% endif %}>Feedback</option>
+      </select>
+    </div>
+
+    <div class="mb-2" id="equipment-id-wrapper" style="display:none;">
+      <label class="form-label">選擇設備（Logs 必填）</label>
+      <select class="form-select" name="equipment_id" id="equipment-id">
+        <option value="">請選擇設備</option>
+        {% for eq in equipments or [] %}
+          <option value="{{ eq.id }}">{{ eq.supermicro_sn }} / {{ eq.kaori_sn }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-2" id="equipment-type-wrapper">
+      <label class="form-label">設備類型</label>
+      <select class="form-select" name="equipment_type_id" id="equipment-type">
+        <option value="">請選擇設備類型</option>
+        {% for t in equipment_types or [] %}
+          <option value="{{ t.id }}">{{ t.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-2" id="feedback-wrapper" style="display:none;">
+      <label class="form-label">Feedback 說明</label>
+      <textarea class="form-control" name="feedback_text" rows="4"
+                placeholder="請描述需設變設備及原因..."></textarea>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">檔案</label>
+      <input id="file-input" class="form-control" type="file" name="file">
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="button" id="add-location-btn" class="btn btn-success">新增</button>
+      <button type="submit" class="btn btn-primary">上傳</button>
+    </div>
+  </form>
+
+  <div id="upload-progress-wrapper" class="progress-wrapper" style="display:none;">
+    <div>
+      <div class="swal-progress-container">
+        <div id="swal-progress" class="swal-progress-bar"></div>
+      </div>
+      <div id="swal-percent" class="swal-percent">0%</div>
+    </div>
+  </div>
+  <div id="upload-complete-message">上傳完成！</div>
+</div>
+
+<script>
+  window.EQUIPMENT_UPLOAD_CFG = {
+    addLocationUrl: {{ url_for('api.api_add_location') | tojson }},
+    uploadUrl: {{ url_for('api.api_equipment_upload') | tojson }},
+  };
+</script>
+<script src="{{ url_for('static', filename='js/equipment_upload.js') }}"></script>

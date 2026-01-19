@@ -1,0 +1,33 @@
+{# templates/equipment_list.html 
+euqipment_list#}
+<div class="p-3 bg-white border rounded mb-3 d-flex align-items-center justify-content-between">
+  <div>
+    <strong>目前位置：</strong>
+    {% if selected_country and selected_room %}
+      {{ selected_country }} / {{ selected_room }}
+    {% else %}
+      All
+    {% endif %}
+  </div>
+
+  <div class="d-flex gap-2">
+{#    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('main.equipment_search') }}">Search</a> #}
+
+    {% if selected_country_id and selected_room_id %}
+      <a class="btn btn-sm btn-primary"
+         href="{{ url_for('main.case_room_equipments',
+                          case_scene_id=selected_country_id,
+                          room_id=selected_room_id,
+                          tab='upload') }}">
+        前往上傳
+      </a>
+    {% else %}
+      <a class="btn btn-sm btn-primary" href="{{ url_for('main.equipment_upload') }}">
+        Upload
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{# ✅ 這裡只做 list 顯示 #}
+{% include "equipment_partial.html" %}

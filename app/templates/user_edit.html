@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>編輯使用者</h2>
+  <p>目前登入：{{ current_user.username }}（角色：{{ current_user.role }}）</p>
+
+  <hr>
+
+  <form method="post" action="{{ url_for('main.edit_user', user_id=user.id) }}" style="max-width:480px;">
+    {% if current_role == 'superuser' %}
+      <div class="mb-3">
+        <label class="form-label">帳號：</label>
+        <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">角色：</label>
+        <select name="role" class="form-select">
+          <option value="user" {% if user.role == 'user' %}selected{% endif %}>user</option>
+          <option value="operator" {% if user.role == 'operator' %}selected{% endif %}>operator</option>
+          <option value="superuser" {% if user.role == 'superuser' %}selected{% endif %}>superuser</option>
+        </select>
+      </div>
+    {% else %}
+      <p><strong>帳號：</strong> {{ user.username }}</p>
+      <p><strong>角色：</strong> {{ user.role }}</p>
+      <p class="text-muted">（operator 只能修改自己的密碼）</p>
+    {% endif %}
+
+    <div class="mb-3">
+      <label class="form-label">新密碼（可不填）：</label>
+      <input type="password" name="password" class="form-control" placeholder="若不修改密碼可留空">
+    </div>
+
+    <button type="submit" class="btn btn-primary">儲存變更</button>
+    <a href="{{ url_for('main.manage_users') }}" class="btn btn-secondary ms-2">返回人員管理</a>
+  </form>
+{% endblock %}

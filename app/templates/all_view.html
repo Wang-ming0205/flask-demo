@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+    <div>
+      <div class="section-title">All 檔案概況（依案場）</div>
+      <div class="section-sub">點左側 Tree 切換案場 / Room，右側顯示檔案清單。</div>
+    </div>
+
+    {% if current_user.is_authenticated and current_user.role == 'superuser' %}
+      <button id="btn-reset" type="button" class="btn btn-danger btn-sm">
+        Reset system
+      </button>    
+      {% endif %}
+  </div>
+
+  {% if not uploaded_items %}
+    <p class="text-muted mb-0">目前尚未上傳任何檔案。</p>
+  {% else %}
+    {% for cs_name, rooms in uploaded_items.items() %}
+      <div class="mb-3">
+        <div class="fw-bold mb-2">國家：{{ cs_name }}</div>
+
+        <div class="ps-2">
+          {% for room_name, files in rooms.items() %}
+            <div class="mb-2">
+              <div class="fw-semibold">Room：{{ room_name }}</div>
+
+              {% if files %}
+                <ul class="mb-2">
+                  {% for f in files %}
+                    <li>
+                      <a href="{{ url_for('main.view_inspection_report', filename=f) }}" 
+                      class="spa-report-link"
+                      data-url="{{ url_for('main.view_inspection_report', filename=f) }}">
+                      {{ f }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="text-muted">（目前沒有檔案）</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+{% endblock %}
+

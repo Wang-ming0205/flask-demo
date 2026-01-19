@@ -1,0 +1,82 @@
+{#<div class="alert alert-warning">
+  equipment_case.html 還沒做（先佔位）
+</div>
+
+#}
+
+{# templates/equipment_case.html #}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h4 class="mb-1">案場：{{ selected_country or "-" }}</h4>
+    <div class="text-muted small">選擇房間以查看報表 / 設備清單</div>
+  </div>
+
+  <div class="d-flex gap-2">
+    {% if can_upload and selected_country_id %}
+      <a class="btn btn-sm btn-outline-secondary"
+         href="{{ url_for('main.equipment_case_scene_root',
+                          case_scene_id=selected_country_id) }}">
+        重新整理
+      </a>
+
+      <a class="btn btn-sm btn-primary"
+         href="{{ url_for('main.equipment_case_upload',
+                          case_scene_id=selected_country_id) }}">
+        前往上傳
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+
+
+{% if case_rooms and case_rooms|length > 0 %}
+  <div class="list-group">
+    {% for r in case_rooms %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">{{ r.room_name }}</div>
+          <div class="text-muted small">Room ID: {{ r.id }}</div>
+        </div>
+
+        <div class="d-flex gap-2">
+          {# 1) 看 report（你有 /equipment/case-scenes/<id>/rooms/<id>） #}
+          <a class="btn btn-outline-secondary btn-sm"
+             href="{{ url_for('main.equipment_case_room_report',
+                              case_scene_id=selected_country_id,
+                              room_id=r.id,
+                              category=category or 'inspection') }}">
+            查看報表
+          </a>
+
+          {# 2) 看 equipments（你有 /equipments） #}
+          <a class="btn btn-outline-primary btn-sm"
+             href="{{ url_for('main.equipment_case_room_equipments',
+                              case_scene_id=selected_country_id,
+                              room_id=r.id,
+                              tab='list',
+                              category=category or 'inspection') }}">
+            設備清單
+          </a>
+
+          {# 3) 直接進 upload tab（同一頁的 upload 模式） #}
+          {% if can_upload %}
+            <a class="btn btn-primary btn-sm"
+               href="{{ url_for('main.equipment_case_room_equipments',
+                                case_scene_id=selected_country_id,
+                                room_id=r.id,
+                                tab='upload',
+                                category=category or 'inspection') }}">
+              前往上傳
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">
+    這個案場目前沒有 rooms（case_rooms 為空）
+  </div>
+{% endif %}

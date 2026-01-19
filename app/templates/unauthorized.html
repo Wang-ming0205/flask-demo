@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>沒有權限</h2>
+  <p>此頁面需要下列角色之一：{{ needed|join(', ') }}。你目前的角色：{{ current_user.role if current_user.is_authenticated else '未登入' }}。</p>
+  <p><a href="{{ url_for('main.index') }}">回首頁</a></p>
+{% endblock %}

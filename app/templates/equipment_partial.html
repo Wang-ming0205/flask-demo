@@ -1,0 +1,38 @@
+{#euqipment_partial#}
+{% if equipments and equipments|length > 0 %}
+  <h5 class="mb-2">設備清單</h5>
+
+  <table class="table table-sm table-bordered" style="background:#fff;">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Kaori SN</th>
+        <th>Supermicro SN</th>
+        <th>Firmware</th>
+        <th>Room</th>
+        <th>Type</th>
+        <th>Feedback</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in equipments %}
+        <tr>
+          <td>{{ e.id }}</td>
+          <td>{{ e.kaori_sn }}</td>
+          <td>{{ e.supermicro_sn }}</td>
+          <td>{{ e.firmware }}</td>
+          <td>{{ e.room.room_name if e.room else (e.room_id or '-') }}</td>
+          <td>{{ e.equipment_type.name if e.equipment_type else (e.equipment_type_id or '-') }}</td>
+          <td>
+            <a href="{{ url_for('main.equipment_feedback', eq_id=e.id) }}">新增/查看</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+  <div class="alert alert-info mb-0">
+    目前沒有設備資料（或尚未選擇 Room）。
+  </div>
+{% endif %}

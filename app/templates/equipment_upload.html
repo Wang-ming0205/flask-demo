@@ -63,7 +63,7 @@
       <select class="form-select" name="equipment_id" id="equipment-id">
         <option value="">請選?�設??/option>
         {% for eq in equipments or [] %}
-          <option value="{{ eq.id }}">{{ eq.supermicro_sn }} / {{ eq.vendor_sn }}</option>
+          <option value="{{ eq.id }}">{{ eq.oem_sn }} / {{ eq.vendor_sn }}</option>
         {% endfor %}
       </select>
     </div>

@@ -22,7 +22,7 @@ def test_upload_and_query():
     # ?¥è©¢ EquipmentInfo
     equipments = EquipmentInfo.query.all()
     for e in equipments:
-        print(e.id, e.vendor_sn, e.supermicro_sn, e.firmware, e.room_id, e.equipment_type_id)
+        print(e.id, e.vendor_sn, e.oem_sn, e.firmware, e.room_id, e.equipment_type_id)
 
 if __name__ == "__main__":
     test_upload_and_query()

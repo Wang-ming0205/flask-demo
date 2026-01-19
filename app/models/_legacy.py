@@ -96,7 +96,7 @@ class EquipmentInfo(db.Model):
 
     # SN ?¯ä?ï¼Œä???FK-m 
     vendor_sn = db.Column(db.String(50), unique=True, nullable=False)
-    supermicro_sn = db.Column(db.String(50), unique=True, nullable=False)
+    oem_sn = db.Column(db.String(50), unique=True, nullable=False)
 
     ats = db.Column(db.String(45), nullable=True)
     macaddr = db.Column(db.String(30), nullable=True)

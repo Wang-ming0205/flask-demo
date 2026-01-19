@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>?°å? Feedback - {{ equipment.vendor_sn or equipment.supermicro_sn }}</h2>
+  <h2>?°å? Feedback - {{ equipment.vendor_sn or equipment.oem_sn }}</h2>
 
   <form method="POST"
         action="{{ url_for('main.add_equipment_feedback', eq_id=equipment.id) }}"

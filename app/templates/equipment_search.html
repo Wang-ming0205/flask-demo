@@ -20,7 +20,7 @@
       <tr>
         <th>#</th>
         <th>Vendor SN</th>
-        <th>Supermicro SN</th>
+        <th>OEM SN</th>
         <th>Firmware</th>
         <th>Room</th>
         <th>Type</th>
@@ -31,7 +31,7 @@
       <tr>
         <td>{{ loop.index }}</td>
         <td>{{ eq.Vendor_sn }}</td>
-        <td>{{ eq.supermicro_sn }}</td>
+        <td>{{ eq.OEM_sn }}</td>
         <td>{{ eq.firmware }}</td>
         <td>{{ eq.room.room_name if eq.room else '-' }}</td>
         <td>{{ eq.equipment_type.name if eq.equipment_type else '-' }}</td>

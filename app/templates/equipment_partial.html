@@ -7,7 +7,7 @@
       <tr>
         <th>ID</th>
         <th>Vendor SN</th>
-        <th>Supermicro SN</th>
+        <th>OEM SN</th>
         <th>Firmware</th>
         <th>Room</th>
         <th>Type</th>
@@ -19,7 +19,7 @@
         <tr>
           <td>{{ e.id }}</td>
           <td>{{ e.vendor_sn }}</td>
-          <td>{{ e.supermicro_sn }}</td>
+          <td>{{ e.OEM_sn }}</td>
           <td>{{ e.firmware }}</td>
           <td>{{ e.room.room_name if e.room else (e.room_id or '-') }}</td>
           <td>{{ e.equipment_type.name if e.equipment_type else (e.equipment_type_id or '-') }}</td>

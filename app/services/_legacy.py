@@ -64,13 +64,13 @@ def build_room_equipments_ctx(case_scene_id: int, room_id: int, query: Equipment
         like = query.like()
         eq_q = eq_q.filter(or_(
             EquipmentInfo.vendor_sn.ilike(like),
-            EquipmentInfo.supermicro_sn.ilike(like),
+            EquipmentInfo.oem_sn.ilike(like),
         ))
 
     if query.type_id:
         eq_q = eq_q.filter(EquipmentInfo.equipment_type_id == query.type_id)
 
-    equipments = eq_q.order_by(EquipmentInfo.supermicro_sn.asc()).all()
+    equipments = eq_q.order_by(EquipmentInfo.oem_sn.asc()).all()
 
     uploaded_items = load_uploaded_items() or {}
     cs_key = CaseKey.from_casescene(cs).display
@@ -316,7 +316,7 @@ def build_inspection_report_context(filename: str) -> Dict[str, Any]:
 
     eq = None
     if serial_number:
-        eq = EquipmentInfo.query.filter_by(supermicro_sn=serial_number).first()
+        eq = EquipmentInfo.query.filter_by(oem_sn=serial_number).first()
     if not eq and vendor_sn:
         eq = EquipmentInfo.query.filter_by(vendor_sn=vendor_sn).first()
 
@@ -400,23 +400,23 @@ def upload_and_register_auto(
         if category == "inspection":
             info = parse_equipment_file(stored_path)
 
-            supermicro_sn = (info.get("serial_number") or "").strip()
+            oem_sn = (info.get("serial_number") or "").strip()
             vendor_sn = (info.get("vendor_sn") or "").strip()
             firmware = (info.get("firmware") or "").strip()
 
-            if not supermicro_sn:
-                raise ValueError("æª”æ?ç¼ºå? Serial Number (supermicro_sn)")
+            if not oem_sn:
+                raise ValueError("æª”æ?ç¼ºå? Serial Number (oem_sn)")
             if not vendor_sn:
                 raise ValueError("æª”æ?ç¼ºå? Vendor SN (vendor_sn)")
             if not firmware:
                 raise ValueError("æª”æ?ç¼ºå? firmware (system_software/control_firmware)")
 
-            equipment = EquipmentInfo.query.filter_by(supermicro_sn=supermicro_sn).first() \
+            equipment = EquipmentInfo.query.filter_by(oem_sn=oem_sn).first() \
                         or EquipmentInfo.query.filter_by(vendor_sn=vendor_sn).first()
 
             if not equipment:
                 equipment = EquipmentInfo(
-                    supermicro_sn=supermicro_sn,
+                    oem_sn=oem_sn,
                     vendor_sn=vendor_sn,
                     firmware=firmware,
                     room_id=r.id,
@@ -791,7 +791,7 @@ def build_case_room_report_ctx(case_scene_id: int, room_id: int, category: str):
         report_ctx = build_inspection_report_context(latest)
 
     equipments = EquipmentInfo.query.filter_by(room_id=room.id).order_by(
-        EquipmentInfo.supermicro_sn.asc()
+        EquipmentInfo.oem_sn.asc()
     ).all()
 
     return dict(
